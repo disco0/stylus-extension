@@ -1055,6 +1055,9 @@
   "optionsCustomizeSync": {
     "message": "Sync to cloud"
   },
+  "optionsCustomizeTemplate": {
+    "message": "Use gist file as template"
+  },
   "optionsHeading": {
     "message": "Options",
     "description": "Heading for options section on manage page."

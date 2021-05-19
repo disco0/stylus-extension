@@ -1,3 +1,6 @@
+///<reference path="./updater-ui.d.ts"/>
+///<reference lib="esnext"/>
+
 /* global $ $$ $create messageBoxProxy scrollElementIntoView */// dom.js
 /* global $entry */// render.js
 /* global API */// msg.js
@@ -29,8 +32,8 @@ function applyUpdateAll() {
 
 function checkUpdateAll() {
   document.body.classList.add('update-in-progress');
-  const btnCheck = $('#check-all-updates');
-  const btnCheckForce = $('#check-all-updates-force');
+  const btnCheck = $('input#check-all-updates');
+  const btnCheckForce = $('input#check-all-updates-force');
   const btnApply = $('#apply-all-updates');
   const noUpdates = $('#update-all-no-updates');
   btnCheck.disabled = true;
@@ -92,9 +95,13 @@ function checkUpdateAll() {
     }
   }
 }
-
+/**
+ *
+ * @param {Element} entry
+ * @param {{single?: boolean}} [param1]
+ */
 function checkUpdate(entry, {single} = {}) {
-  $('.update-note', entry).textContent = t('checkingForUpdate');
+  /** @type {HTMLDivElement} */ ( $('.update-note', entry) ).textContent = t('checkingForUpdate');
   $('.check-update', entry).title = '';
   if (single) {
     API.updater.checkStyle({
@@ -109,8 +116,8 @@ function checkUpdate(entry, {single} = {}) {
 
 function reportUpdateState({updated, style, error, STATES}) {
   const isCheckAll = document.body.classList.contains('update-in-progress');
-  const entry = $entry(style);
-  const newClasses = new Map([
+  const entry = /** @type {HTMLElement} */ (/** @type {unknown} */ ( $entry(style)));
+  const newClasses = new Map(/** @type {[string, boolean | number][]} */ ( [
     /*
      When a style is updated/installed, handleUpdateInstalled() clears "updatable"
      and sets "update-done" class (optionally "install-done").
@@ -124,11 +131,11 @@ function reportUpdateState({updated, style, error, STATES}) {
     ['install-done', 0],
     ['no-update', 0],
     ['update-problem', 0],
-  ]);
+  ] ));
   if (updated) {
     newClasses.set('can-update', true);
     entry.updatedCode = style;
-    $('.update-note', entry).textContent = '';
+    /** @type {HTMLElement} */ (/** @type {unknown} */ ( $('.update-note', entry) ) ).textContent = '';
     $('#only-updates').classList.remove('hidden');
   } else if (!entry.classList.contains('can-update')) {
     const same = (

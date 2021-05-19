@@ -29,11 +29,14 @@ router.watch({search: ['search', 'searchMode']}, ([search, mode]) => {
 });
 
 function initFilters() {
-  $('#search').oninput = $('#searchMode').oninput = function (e) {
+  const oninput = function (e) {
     router.updateSearch(this.id, e.target.value);
-  };
+  }
+  Object.assign($('#search'), { oninput });
+  Object.assign($('#searchMode'), { oninput });
 
-  $('#search-help').onclick = event => {
+  Object.assign($('#search-help'), { onclick: (event) =>
+  {
     event.preventDefault();
     messageBoxProxy.show({
       className: 'help-text',
@@ -52,7 +55,7 @@ function initFilters() {
             })))),
       buttons: [t('confirmOK')],
     });
-  };
+  }});
 
   $$('select[id$=".invert"]').forEach(el => {
     const slave = $('#' + el.id.replace('.invert', ''));
@@ -88,18 +91,16 @@ function initFilters() {
   });
 
   $$('[data-filter]').forEach(el => {
-    el.onchange = filterOnChange;
-    if (el.closest('.hidden')) {
-      el.checked = false;
-    }
+    Object.assign(el, { onchange: filterOnChange });
+    if (el.closest('.hidden')) { el.checked = false; }
   });
 
-  $('#reset-filters').onclick = event => {
+  $('#reset-filters').on('click', (event) => {
     event.preventDefault();
     if (!filtersSelector.hide) {
       return;
     }
-    for (const el of $$('#filters [data-filter]')) {
+    for (const el of $$('#filters [data-filter]') ) {
       let value;
       if (el.type === 'checkbox' && el.checked) {
         value = el.checked = false;
@@ -115,21 +116,35 @@ function initFilters() {
     }
     filterOnChange({forceRefilter: true});
     router.updateSearch('search', '');
-  };
+  });
 
   filterOnChange({forceRefilter: true});
 }
 
-function filterOnChange({target: el, forceRefilter, alreadySearched}) {
-  const getValue = el => (el.type === 'checkbox' ? el.checked : el.value.trim());
+/**
+ *
+ * @param {{
+ *   target?: SearchElement;
+ *   forceRefilter?: boolean;
+ *   alreadySearched?: boolean
+ * }} param0
+ */
+function filterOnChange({target: el, forceRefilter, alreadySearched})
+{
+  /**
+   * @param {HTMLInputElement} el
+   * @return {boolean | string}
+   */
+  const getValue = el => (el.type === 'checkbox' ? el.checked : ( el.value.trim() ));
+
   if (!forceRefilter) {
     const value = getValue(el);
     if (value === el.lastValue) {
       return;
     }
-    el.lastValue = value;
+    el.lastValue = /** @type {string} */ ( value );
   }
-  const enabledFilters = $$('#header [data-filter]').filter(el => getValue(el));
+  const enabledFilters = $$(/** @type {'input'} */ ( '#header [data-filter]' )).filter(el => getValue(el));
   const buildFilter = hide =>
     (hide ? '' : '.entry.hidden') +
     [...enabledFilters.map(el =>
@@ -248,16 +263,27 @@ function showFiltersStats() {
     filtersSelector.numTotal = numTotal;
     $('#filters-stats').textContent = t('filteredStyles', [numShown, numTotal]);
     document.body.classList.toggle('all-styles-hidden-by-filters',
-      !numShown && numTotal && filtersSelector.hide);
+      /** @type {boolean} */ (/** @type {unknown} */
+        ( !numShown && numTotal && filtersSelector.hide ) ));
   }
 }
 
+/**
+ *
+ * @param {{
+ *   immediately?: boolean
+ *   container?: ParentNode
+ * }} param0
+ */
 async function searchStyles({immediately, container} = {}) {
   const el = $('#search');
   const elMode = $('#searchMode');
   const query = el.value.trim();
   const mode = elMode.value;
-  if (query === el.lastValue && mode === elMode.lastValue && !immediately && !container) {
+  if (query === el.lastValue
+      && mode === elMode.lastValue
+      && !immediately && !container)
+  {
     return;
   }
   if (!immediately) {

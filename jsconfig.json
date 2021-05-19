@@ -1,0 +1,61 @@
+// For typechecking, no emit.
+{
+  "typeAcquisition":
+  {
+    "enable": true,
+    "include": ["chrome", "jquery", "typed-query-selector"],
+    "exclude": ["node"]
+  },
+  "include":
+  [
+    "./globals.d.ts",
+    "./vendor-overwrites", // /*.js",
+    "./tools", // /*.js",
+    "./popup", // /*.js",
+    "./options", // /*.js",
+    "./manage", // /*.js",
+    "./js", // /*.js",
+    "./background"
+  ],
+  "exclude":
+  [
+    "node_modules",
+    "node_modules/agent-base/**",
+    "_locales",
+    ".git",
+    ".github",
+  ],
+  "compilerOptions":
+  {
+    "noEmit": true,
+    "checkJs": true,
+    "skipLibCheck": true,
+    "allowUmdGlobalAccess": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "suppressExcessPropertyErrors": true,
+    "target": "esnext",
+
+    "moduleResolution": "node",
+    "module": "amd",
+
+    "rootDirs": [
+      "./background",
+      "./edit",
+      "./install-usercss",
+      "./js",
+      "./manage",
+      "./options",
+      "./popup",
+      "./tools",
+      "./vendor-overwrites"
+    ],
+    "baseUrl": "./",
+
+
+    "typeRoots":
+    [
+      "node_modules/@types",
+      "node_modules/web-ext-types"
+    ]
+  }
+}
